@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-7 col-lg-5">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title mb-3">Sign Up</h2>
+
+        <form method="post">
+          {% csrf_token %}
+          {% if form.errors %}
+          <div class="alert alert-danger">Please fix the errors below.</div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label for="{{ form.username.id_for_label }}" class="form-label"
+              >Username</label
+            >
+            <input
+              type="text"
+              name="{{ form.username.name }}"
+              id="{{ form.username.id_for_label }}"
+              value="{{ form.username.value|default_if_none:'' }}"
+              class="form-control"
+              required
+            />
+            {% if form.username.errors %}
+            <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.password1.id_for_label }}" class="form-label"
+              >Password</label
+            >
+            <input
+              type="password"
+              name="{{ form.password1.name }}"
+              id="{{ form.password1.id_for_label }}"
+              class="form-control"
+              required
+            />
+            {% if form.password1.errors %}
+            <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.password2.id_for_label }}" class="form-label"
+              >Confirm Password</label
+            >
+            <input
+              type="password"
+              name="{{ form.password2.name }}"
+              id="{{ form.password2.id_for_label }}"
+              class="form-control"
+              required
+            />
+            {% if form.password2.errors %}
+            <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn w-100 create-acc-btn">
+            Create Account
+          </button>
+        </form>
+        <p class="mt-3 mb-0 text-center">
+          Already have an account? <a href="{% url 'login' %}" class="login-link">Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

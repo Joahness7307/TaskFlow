@@ -1,0 +1,160 @@
+.custom-pagination {
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.custom-add-task-btn {
+  background-color: #326273;
+  border: 1px solid #326273;
+  padding: 6px 12px;
+  transition: 0.15s ease;
+}
+
+.custom-add-task-btn:hover {
+  background-color: #254652;
+  border: 1px solid #254652;
+}
+
+.btn.custom-add-task-btn:active {
+  background-color: #1b333b;
+  border: 1px solid #1b333b;
+}
+
+.custom-create-task-btn {
+  background-color: #326273;
+  border: 1px solid #326273;
+  transition: 0.15s ease;
+}
+
+.custom-create-task-btn:hover {
+  background-color: #254652;
+  border: 1px solid #254652;
+}
+
+.btn.custom-create-task-btn:active {
+  background-color: #1b333b;
+  border: 1px solid #1b333b;
+}
+
+.cancel-task-btn {
+  background-color: white;
+  color: #212529;
+  transition: 0.15s ease;
+}
+
+.custom-clear-btn {
+  transition: 0.15s ease;
+}
+
+.task-table th {
+  color: #212529;
+}
+
+.task-table td {
+  color: #212529;
+}
+
+.task-table tr {
+  border-bottom: 1px solid #e6eef2;
+}
+
+.task-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.task-table td,
+.task-table th {
+  vertical-align: middle;
+  word-wrap: break-word;
+  padding: 10px;
+  border: none;
+}
+
+tr.is_overdue, .is_overdue td {
+  background-color: #fff5f5;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.actions-cell .btn {
+  margin-right: 6px;
+}
+
+.actions-cell .btn:last-child {
+  margin-right: 0;
+}
+
+.btn.btn-outline-success {
+  border: 1px solid #326273;
+  transition: 0.15s ease;
+}
+
+.btn.btn-outline-success:hover {
+  background-color: #254652;
+}
+
+.btn.btn-outline-success:active {
+  background-color: #1b333b;
+}
+
+.btn.btn-outline-danger {
+  transition: 0.15s ease;
+}
+
+.page-link {
+  color: #326273;
+}
+
+@media (max-width: 767.98px) {
+  .task-table thead {
+    display: none;
+  }
+
+  .task-table,
+  .task-table tbody,
+  .task-table tr,
+  .task-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .task-table tr {
+    border: 1px solid #5c9ead;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .is_overdue {
+    background-color: #fff5f5;
+  }
+
+  .task-table td {
+    border: 0;
+    padding: 0.35rem 0;
+    color: #212529;
+  }
+
+  .task-table td::before {
+    content: attr(data-label) " ";
+    font-weight: 600;
+    color: #212529;
+    margin-right: 0.25rem;
+  }
+
+  .task-table td[data-label="Actions"] {
+    gap: 0.5rem;
+  }
+
+  .task-table td[data-label="Actions"]::before {
+    width: 100%;
+  }
+
+  .custom-pagination {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+}

@@ -1,0 +1,536 @@
+{% extends 'base.html' %} {% block content %}
+
+{% load static %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="mb-0">Task List</h1>
+  <button
+    type="button"
+    class="btn btn-primary custom-add-task-btn"
+    data-bs-toggle="modal"
+    data-bs-target="#addTaskModal"
+  >
+    Add Task
+  </button>
+</div>
+
+<form id="taskFilterForm" method="GET" class="row g-3 align-items-end mb-4">
+  <input type="hidden" name="search" value="{{ search_query }}" />
+  <div class="col-12 col-md-3">
+    <label for="status" class="form-label">Status</label>
+    <select id="status" name="status" class="form-select auto-submit-filter">
+      <option value="all" {% if status_filter == 'all' %}selected{% endif %}>
+        All
+      </option>
+      <option
+        value="completed"
+        {% if status_filter == 'completed' %}selected{% endif %}
+      >
+        Completed
+      </option>
+      <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>
+        Pending
+      </option>
+    </select>
+  </div>
+  <div class="col-12 col-md-3">
+    <label for="month" class="form-label">Month</label>
+    <select id="month" name="month" class="form-select auto-submit-filter">
+      <option value="">All months</option>
+      {% for month in available_months %}
+      <option
+        value="{{ month|date:'Y-m' }}"
+        {% if month_filter == month|date:'Y-m' %}selected{% endif %}
+      >
+        {{ month|date:'F Y' }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-12 col-md-3">
+    <label for="sort" class="form-label">Sort By</label>
+    <select id="sort" name="sort" class="form-select auto-submit-filter">
+      <option
+        value="created_date"
+        {% if sort_option == 'created_date' %}selected{% endif %}
+      >
+        Created Date
+      </option>
+      <option value="due_date" {% if sort_option == 'due_date' %}selected{% endif %}>
+        Due Date
+      </option>
+      <option value="priority" {% if sort_option == 'priority' %}selected{% endif %}>
+        Priority
+      </option>
+      <option value="title" {% if sort_option == 'title' %}selected{% endif %}>
+        Title
+      </option>
+    </select>
+  </div>
+  <div class="col-12 col-md-auto">
+    <a href="{% url 'task_list' %}" class="btn btn-outline-secondary custom-clear-btn">Clear</a>
+  </div>
+</form>
+
+<table class="table table-hover align-middle task-table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Priority</th>
+      <th>Due Date</th>
+      <th>Completed</th>
+      <th>Created At</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for task in tasks %}
+    <tr
+      class="{% if task.due_date and task.due_date < today and not task.is_completed %} is_overdue{% endif %}"
+      data-task-row-id="{{ task.id }}"
+    >
+      <td data-label="Title">{{ task.title }}</td>
+      <td data-label="Description">{{ task.description }}</td>
+      <td data-label="Priority">
+        {% if task.priority == 'urgent' %}
+        <span class="badge text-bg-danger">Urgent</span>
+        {% elif task.priority == 'high' %}
+        <span class="badge" style="background-color: #fd7e14">High</span>
+        {% elif task.priority == 'medium' %}
+        <span class="badge text-bg-warning text-dark">Medium</span>
+        {% else %}
+        <span class="badge text-bg-secondary">Low</span>
+        {% endif %}
+      </td>
+      <td data-label="Due Date" class="due-date-cell">
+        {% if task.due_date %}
+          {% if task.due_date < today and not task.is_completed %}
+          <span class="text-danger fw-semibold">{{ task.due_date }}</span>
+          {% else %}
+          <span>{{ task.due_date }}</span>
+          {% endif %}
+        {% else %}
+        <span class="text-muted">No due date</span>
+        {% endif %}
+      </td>
+      <td data-label="Completed" class="align-middle">
+        <div class="d-inline-flex">
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input completion-toggle"
+            type="checkbox"
+            role="switch"
+            id="toggle_{{ task.id }}"
+            data-toggle-url="{% url 'task_toggle_completion' task.id %}"
+            {% if task.is_completed %}checked{% endif %}
+          />
+          <label
+            class="form-check-label completion-label"
+            for="toggle_{{ task.id }}"
+          >
+            {% if task.is_completed %}Completed{% else %}Pending{% endif %}
+          </label>
+        </div>
+      </div>
+      </td>
+      <td data-label="Created At">{{ task.created_at }}</td>
+      <td data-label="Actions" class="align-middle">
+        <div class="d-inline-flex gap-2">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-success edit-task-btn"
+          data-bs-toggle="modal"
+          data-bs-target="#editTaskModal"
+          data-edit-url="{% url 'task_edit' task.id %}"
+          data-task-id="{{ task.id }}"
+          data-task-title="{{ task.title|escapejs }}"
+          data-task-description="{{ task.description|escapejs }}"
+          data-task-due-date="{{ task.due_date|date:'Y-m-d' }}"
+          data-task-priority="{{ task.priority }}"
+          data-task-completed="{{ task.is_completed|yesno:'true,false' }}"
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-danger delete-task-btn"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteConfirmModal"
+          data-delete-url="{% url 'task_delete' task.id %}"
+          data-task-id="{{ task.id }}"
+          data-task-title="{{ task.title|escapejs }}"
+        >
+          Delete
+        </button>
+      </div>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7" class="text-center text-muted">No tasks found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav aria-label="Task list pagination">
+  <ul class="pagination justify-content-center custom-pagination">
+    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+      <a
+        class="page-link"
+        href="?{% if query_params %}{{ query_params }}&{% endif %}page=1"
+        aria-label="First"
+      >
+        First
+      </a>
+    </li>
+    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+      {% if page_obj.has_previous %}
+      <a
+        class="page-link"
+        href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ page_obj.previous_page_number }}"
+        aria-label="Previous"
+      >
+        Previous
+      </a>
+      {% else %}
+      <span class="page-link">Previous</span>
+      {% endif %}
+    </li>
+    <li class="page-item disabled">
+      <span class="page-link">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </span>
+    </li>
+    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+      {% if page_obj.has_next %}
+      <a
+        class="page-link"
+        href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ page_obj.next_page_number }}"
+        aria-label="Next"
+      >
+        Next
+      </a>
+      {% else %}
+      <span class="page-link">Next</span>
+      {% endif %}
+    </li>
+    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+      <a
+        class="page-link"
+        href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+        aria-label="Last"
+      >
+        Last
+      </a>
+    </li>
+  </ul>
+</nav>
+{% endif %}
+
+<div class="modal fade" id="editTaskModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Task</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form id="editTaskForm" method="POST">
+        <div class="modal-body">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="edit_title" class="form-label">Title</label>
+            <input
+              type="text"
+              class="form-control"
+              id="edit_title"
+              name="title"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="edit_description" class="form-label">Description</label>
+            <input
+              type="text"
+              class="form-control"
+              id="edit_description"
+              name="description"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="edit_due_date" class="form-label">Due Date</label>
+            <input
+              type="date"
+              class="form-control"
+              id="edit_due_date"
+              name="due_date"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="edit_priority" class="form-label">Priority</label>
+            <select class="form-select" id="edit_priority" name="priority">
+              <option value="urgent">Urgent</option>
+              <option value="high">High</option>
+              <option value="medium" selected>Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="mb-3 form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="edit_is_completed"
+              name="is_completed"
+            />
+            <label class="form-check-label" for="edit_is_completed"
+              >Completed</label
+            >
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary cancel-task-btn" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary custom-create-task-btn">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Task</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form method="POST" action="{% url 'create_task' %}">
+        <div class="modal-body">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="add_title" class="form-label">Title</label>
+            <input
+              type="text"
+              class="form-control"
+              id="add_title"
+              name="title"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="add_description" class="form-label">Description</label>
+            <input
+              type="text"
+              class="form-control"
+              id="add_description"
+              name="description"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="add_due_date" class="form-label">Due Date</label>
+            <input
+              type="date"
+              class="form-control"
+              id="add_due_date"
+              name="due_date"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="add_priority" class="form-label">Priority</label>
+            <select class="form-select" id="add_priority" name="priority">
+              <option value="urgent">Urgent</option>
+              <option value="high">High</option>
+              <option value="medium" selected>Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="mb-3 form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="add_is_completed"
+              name="is_completed"
+            />
+            <label class="form-check-label" for="add_is_completed"
+              >Completed</label
+            >
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary cancel-task-btn" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary custom-create-task-btn">Create Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Task</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"  
+        ></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete
+        <strong id="deleteTaskName"></strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <form id="deleteTaskForm" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if messages %}
+<div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Status</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        {% for message in messages %}
+        <p class="mb-1">{{ message }}</p>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %} {% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const editForm = document.getElementById('editTaskForm');
+    const deleteForm = document.getElementById('deleteTaskForm');
+    const deleteTaskName = document.getElementById('deleteTaskName');
+    const taskFilterForm = document.getElementById('taskFilterForm');
+
+    document.querySelectorAll('.auto-submit-filter').forEach((filterInput) => {
+      filterInput.addEventListener('change', function () {
+        if (taskFilterForm) {
+          taskFilterForm.submit();
+        }
+      });
+    });
+
+    document.querySelectorAll('.edit-task-btn').forEach((button) => {
+      button.addEventListener('click', function () {
+        editForm.action = this.dataset.editUrl;
+        document.getElementById('edit_title').value = this.dataset.taskTitle;
+        document.getElementById('edit_description').value =
+          this.dataset.taskDescription || '';
+        document.getElementById('edit_due_date').value =
+          this.dataset.taskDueDate || '';
+        document.getElementById('edit_priority').value =
+          this.dataset.taskPriority || 'medium';
+        document.getElementById('edit_is_completed').checked =
+          this.dataset.taskCompleted === 'true';
+      });
+    });
+
+    document.querySelectorAll('.delete-task-btn').forEach((button) => {
+      button.addEventListener('click', function () {
+        deleteForm.action = this.dataset.deleteUrl;
+        deleteTaskName.textContent = this.dataset.taskTitle;
+      });
+    });
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return '';
+    }
+
+    document.querySelectorAll('.completion-toggle').forEach((toggle) => {
+      toggle.addEventListener('change', async function () {
+        const isCompleted = this.checked;
+        const row = this.closest('tr');
+        const label = row.querySelector('.completion-label');
+        const dueDateCell = row.querySelector('.due-date-cell');
+        this.disabled = true;
+
+        try {
+          const response = await fetch(this.dataset.toggleUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ completed: isCompleted }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to update');
+          }
+
+          const data = await response.json();
+          label.textContent = data.is_completed ? 'Completed' : 'Pending';
+
+          if (data.is_overdue) {
+            row.classList.add('table-danger');
+            if (dueDateCell) {
+              dueDateCell.classList.add('text-danger', 'fw-semibold');
+            }
+          } else {
+            row.classList.remove('table-danger');
+            if (dueDateCell) {
+              dueDateCell.classList.remove('text-danger', 'fw-semibold');
+            }
+          }
+        } catch (error) {
+          this.checked = !isCompleted;
+        } finally {
+          this.disabled = false;
+        }
+      });
+    });
+
+    const statusModalElement = document.getElementById('statusModal');
+    if (statusModalElement) {
+      const statusModal = new bootstrap.Modal(statusModalElement);
+      statusModal.show();
+    }
+  });
+</script>
+{% endblock %}

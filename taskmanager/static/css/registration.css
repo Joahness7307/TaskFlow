@@ -1,0 +1,94 @@
+.create-acc-btn {
+  background-color: #326273;
+  color: white;
+  transition: 0.15s ease;
+}
+
+.create-acc-btn:hover {
+  background-color: #254652;
+  color: white;
+}
+
+.btn.create-acc-btn:active {
+  background-color: #1b333b;
+  color: white;
+}
+
+.login-link {
+  color: #326273;
+  transition: 0.15s ease;
+}
+
+.login-link:hover {
+  color: #254652;
+}
+
+.btn.login-link:active {
+  color: #1b333b;
+}
+
+.login-acc-btn2 {
+  font-size: 16px;
+  padding: 6px 12px;
+  border: 1px solid #326273;
+  color: white;
+  transition: 0.15s ease;
+}
+
+.login-acc-btn2:hover {
+  background-color: #254652;
+  color: white;
+}
+
+.btn.login-acc-btn2:active {
+  background-color: #1b333b;
+  border: 1px solid #1b333b;
+  color: white;
+}
+
+.login-acc-btn {
+  background-color: #326273;
+  color: white;
+  transition: 0.15s ease;
+}
+
+.login-acc-btn:hover {
+  background-color: #254652;
+  color: white;
+}
+
+.btn.login-acc-btn:active {
+  background-color: #1b333b;
+  border: 1px solid #1b333b;
+  color: white;
+}
+
+.signup-link {
+  color: #326273;
+  transition: 0.15s ease;
+}
+
+.signup-link:hover {
+  color: #254652;
+}
+
+.btn.signup-link:active {
+  color: #1b333b;
+}
+
+
+/* Responsive Designs | Media Queries */
+
+@media (max-width: 767.98px) {
+  .login-acc-btn2 {
+    font-size: 15px;
+  }
+
+  .login-acc-btn {
+    font-size: 15px;
+  }
+
+  .create-acc-btn {
+    font-size: 15px;
+  }
+}

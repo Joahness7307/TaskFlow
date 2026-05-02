@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="landing-wrapper">
+  <section class="landing-hero">
+    <p class="landing-kicker mb-2">Welcome</p>
+    <h1 class="landing-title mb-3">TaskFlow</h1>
+    <p class="landing-lead mb-4">
+      Organize your tasks efficiently and stay productive.
+    </p>
+    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-stretch align-items-sm-center custom-links">
+      <a href="{% url 'signup' %}" class="btn btn-lg landing-btn-primary px-4">
+        Get Started
+      </a>
+      <a href="{% url 'login' %}" class="btn btn-lg landing-btn-outline px-4">
+        Login
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}
