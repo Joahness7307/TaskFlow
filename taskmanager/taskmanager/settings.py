@@ -16,12 +16,6 @@ from pathlib import Path
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-
-DEBUG = os.getenv("DEBUG") == "True"
-
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z1+p(p8(a0u#aaevozd_@@8h=7@*yvyc==2ikzpq^w^xy=$7u@'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG") == "True"  # compare string to string
+DEBUG = os.getenv("DEBUG") == "True" # compare string to string
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 
 # Application definition
@@ -130,6 +124,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # add this for deployment
 
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/tasks/"

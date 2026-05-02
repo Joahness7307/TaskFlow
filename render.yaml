@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: taskflow
+    runtime: python
+    buildCommand: pip install -r requirements.txt && cd taskmanager && python manage.py collectstatic --no-input && python manage.py migrate
+    startCommand: cd taskmanager && gunicorn taskmanager.wsgi:application
