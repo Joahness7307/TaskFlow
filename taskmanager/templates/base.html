@@ -120,8 +120,14 @@
         </div>
         {% else %}
         <div class="d-none d-sm-flex gap-2 ms-auto">
-          <a href="{% url 'login' %}" class="btn login-acc-btn2">Login</a>
-          <a href="{% url 'signup' %}" class="btn login-acc-btn">Sign Up</a>
+          {% if request.resolver_match.url_name == 'login' %}
+            <a href="{% url 'signup' %}" class="btn login-acc-btn">Sign Up</a>
+          {% elif request.resolver_match.url_name == 'signup' %}
+            <a href="{% url 'login' %}" class="btn login-acc-btn2">Login</a>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn login-acc-btn2">Login</a>
+            <a href="{% url 'signup' %}" class="btn login-acc-btn">Sign Up</a>
+          {% endif %}
         </div>
         <div class="dropdown d-sm-none ms-1">
           <button
@@ -134,9 +140,15 @@
             ☰
           </button>
           <ul class="dropdown-menu dropdown-menu-end custom-dropdown px-3 py-3">
-            <a href="{% url 'login' %}" class="btn login-acc-btn2 w-100">Login</a>
-            <li><hr class="dropdown-divider" /></li>
-            <a href="{% url 'signup' %}" class="btn login-acc-btn w-100">Sign Up</a>
+            {% if request.resolver_match.url_name == 'login' %}
+              <a href="{% url 'signup' %}" class="btn login-acc-btn w-100">Sign Up</a>
+            {% elif request.resolver_match.url_name == 'signup' %}
+              <a href="{% url 'login' %}" class="btn login-acc-btn2 w-100">Login</a>
+            {% else %}
+              <a href="{% url 'login' %}" class="btn login-acc-btn2 w-100">Login</a>
+              <li><hr class="dropdown-divider" /></li>
+              <a href="{% url 'signup' %}" class="btn login-acc-btn w-100">Sign Up</a>
+            {% endif %}
           </ul>
         </div>
         {% endif %}
